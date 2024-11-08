@@ -1,4 +1,0 @@
-name: FarmZone
-version: '1.0-SNAPSHOT'
-main: org.Vertyx.farmZone.FarmZone
-api-version: '1.21'

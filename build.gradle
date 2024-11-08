@@ -39,6 +39,33 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
+def serverDirectory = file("D:\\John\\Documents\\Programmierung\\PaperMC\\MinecraftDevelopmentServer\\Paper1.21.1\\plugins")
+
+tasks.jar {
+    manifest {
+        attributes["paperweight-mappings-namespace"] = "mojang"
+    }
+}
+
+// Task to build the plugin
+tasks.register('buildPlugin', Jar) {
+    dependsOn 'build'
+    from sourceSets.main.output
+    archiveBaseName.set("FarmingZone") // Set your plugin name here
+}
+
+// Task to copy the built JAR to server directory
+tasks.register('deployToServer') {
+    dependsOn 'buildPlugin'
+    doLast {
+        copy {
+            from tasks.buildPlugin.archiveFile
+            into serverDirectory
+        }
+        println "Plugin deployed to server plugins folder!"
+    }
+}
+
 processResources {
     def props = [version: version]
     inputs.properties props
