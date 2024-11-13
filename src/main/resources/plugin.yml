@@ -1,8 +1,9 @@
 name: FarmZone
 version: '1.0-SNAPSHOT'
-main: org.Vertyx.farmZone.FarmZone
+main: org.Vertyx.farmZone.FarmZoneMain
 api-version: '1.21'
 commands:
   farmzone:
-    usage: /<command> <create> <
     description: Create a new safe Area
+  debugfz:
+    description: debug my plugin

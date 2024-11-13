@@ -66,6 +66,19 @@ tasks.register('deployToServer') {
     }
 }
 
+// Task to restart the server
+tasks.register('restartServer') {
+    dependsOn 'deployToServer'
+    doLast {
+        println "Restarting the server..."
+        exec {
+            workingDir "D:/John/Documents/Programmierung/PaperMC/MinecraftDevelopmentServer/Paper1.21.1"
+            commandLine 'cmd', '/c', 'start', 'cmd.exe', '/K', 'start.bat'
+
+        }
+    }
+}
+
 processResources {
     def props = [version: version]
     inputs.properties props
