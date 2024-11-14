@@ -1,6 +1,7 @@
 package org.Vertyx.farmZone.commands;
 
 import org.Vertyx.farmZone.managers.FarmZoneManager;
+import org.bukkit.boss.BarColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -35,7 +36,22 @@ public class FarmzoneCommand implements CommandExecutor {
                     return false;
                 }
                 break;
+
+            case "bossbarcolor":
+                manager.setBossBarColor(BarColor.valueOf(args[1]));
+                break;
+
+            case "hidebossbar":
+                manager.hideBossbar(player);
+                break;
+
+            case "showbossbar":
+                manager.showBossbar(player);
+                break;
+
             default:
+                // send player to last saved position in farmzone
+                // ask if their sure to teleport
                 sender.sendMessage("Invalid command. Usage: /farmzone create <Name> <radius>");
                 return false;
         }

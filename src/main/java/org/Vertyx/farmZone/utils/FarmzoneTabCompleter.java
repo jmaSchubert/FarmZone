@@ -1,5 +1,6 @@
 package org.Vertyx.farmZone.utils;
 
+import org.bukkit.boss.BarColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -15,24 +16,39 @@ public class FarmzoneTabCompleter implements TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> suggestions = new ArrayList<>();
 
+
+
         // Only accessable by players
         if (!(sender instanceof Player)) {
             return suggestions;
         }
 
         // Check if executed Command was /farmzone
-        if (command.getName().equalsIgnoreCase("farmzone")) {
-            if (args.length == 1) {
-
-                suggestions.add("create");
-            } else if (args.length == 2 && args[0].equalsIgnoreCase("create")) {
-
-                suggestions.add("<Name>");
-            } else if (args.length == 3 && args[0].equalsIgnoreCase("create")) {
-
-                suggestions.add("10");
-                suggestions.add("20");
-                suggestions.add("50");
+        if (args[0].isEmpty())
+        {
+            suggestions.add("create");
+            suggestions.add("bossbarcolor");
+        }
+        else if (args[0].equalsIgnoreCase("create")) {
+            switch (args.length) {
+                case 1:
+                    suggestions.add("create");
+                    break;
+                case 2:
+                    suggestions.add("<Name>");
+                    break;
+                case 3:
+                    suggestions.add("10");
+                    suggestions.add("20");
+                    suggestions.add("50");
+                    break;
+            }
+        }
+        else if (args[0].equalsIgnoreCase("bossbarcolor"))
+        {
+            for (BarColor color : BarColor.values())
+            {
+                suggestions.add(String.valueOf(color));
             }
         }
 

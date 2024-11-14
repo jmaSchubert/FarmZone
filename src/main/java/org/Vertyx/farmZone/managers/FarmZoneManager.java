@@ -2,7 +2,12 @@ package org.Vertyx.farmZone.managers;
 
 import org.Vertyx.farmZone.models.HomeZoneModel;
 import org.Vertyx.farmZone.models.PlayerInfo;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -18,6 +23,7 @@ public class FarmZoneManager {
     public static final long MAX_FARMZONE_TIME = 60 * 1000; // 1 minute in milliseconds
     public List<HomeZoneModel> activeHomezones;
     private Map<Player, PlayerInfo> playerInfoMap;
+    private BossBar bossBar = Bukkit.createBossBar(" ", BarColor.GREEN, BarStyle.SOLID);
 
     private FarmZoneManager() {
         activeHomezones = new ArrayList<>();
@@ -53,6 +59,11 @@ public class FarmZoneManager {
         return true;
     }
 
+    public BossBar getBossBar()
+    {
+        return this.bossBar;
+    }
+
     // Methods for handling player logic
     public boolean playerInFarmzone(Player player)
     {
@@ -84,5 +95,19 @@ public class FarmZoneManager {
         HomeZoneModel newHomeZoneModel = new HomeZoneModel(name, center, radius);
         activeHomezones.add(newHomeZoneModel);
         return true;
+    }
+
+    public void setBossBarColor(BarColor color) {
+        bossBar.setColor(color);
+    }
+
+    public void showBossbar(Player player)
+    {
+        bossBar.addPlayer(player);
+    }
+
+    public void hideBossbar(Player player)
+    {
+        bossBar.removePlayer(player);
     }
 }

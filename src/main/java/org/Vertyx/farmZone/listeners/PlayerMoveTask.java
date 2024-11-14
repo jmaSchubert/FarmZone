@@ -3,7 +3,11 @@ package org.Vertyx.farmZone.listeners;
 import org.Vertyx.farmZone.FarmZoneMain;
 import org.Vertyx.farmZone.managers.FarmZoneManager;
 import org.Vertyx.farmZone.models.PlayerInfo;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
 import java.util.concurrent.TimeUnit;
@@ -11,11 +15,13 @@ import java.util.concurrent.TimeUnit;
 public class PlayerMoveTask implements Runnable{
     final private FarmZoneMain plugin;
     final private FarmZoneManager manager;
+    final private BossBar bossBar;
 
     public PlayerMoveTask(FarmZoneMain plugin, FarmZoneManager manager)
     {
         this.plugin = plugin;
         this.manager = manager;
+        this.bossBar = manager.getBossBar();
     }
 
     public void updatePlayerInfo(Player player) {
@@ -36,10 +42,12 @@ public class PlayerMoveTask implements Runnable{
                 playerInfo.inFarmzone = true;
                 playerInfo.exitHomezone = currentTime;
                 player.sendMessage("You've entered the Farmzone!");
+                bossBar.addPlayer(player);
             }
 
             playerInfo.lastCoordinatesInFarmzone = playerLocation;
             long timeSpentInCurrentSession = currentTime - playerInfo.exitHomezone;
+
 
             if (playerInfo.timeSpentInFarmzone + timeSpentInCurrentSession > FarmZoneManager.MAX_FARMZONE_TIME) {
                 // daily time exceeded
@@ -48,9 +56,9 @@ public class PlayerMoveTask implements Runnable{
 
             } else {
                 // player has leftover time
-
+                bossBar.setProgress((double)(FarmZoneManager.MAX_FARMZONE_TIME - (playerInfo.timeSpentInFarmzone + timeSpentInCurrentSession))/FarmZoneManager.MAX_FARMZONE_TIME);
                 // display leftovertime on critical time stamps (30min, 15min, 5min, 1min, 5s, 4s, 3s, 2s, 1s)
-                player.sendMessage("Daily farmzone time remaining: " + TimeUnit.MILLISECONDS.toSeconds(FarmZoneManager.MAX_FARMZONE_TIME - (playerInfo.timeSpentInFarmzone + timeSpentInCurrentSession)) + "s");
+//                player.sendMessage("Daily farmzone time remaining: " + TimeUnit.MILLISECONDS.toSeconds(FarmZoneManager.MAX_FARMZONE_TIME - (playerInfo.timeSpentInFarmzone + timeSpentInCurrentSession)) + "s");
             }
         } else {
             // player returnes to homezone
@@ -59,6 +67,7 @@ public class PlayerMoveTask implements Runnable{
                 long timeSpentInCurrentSession = currentTime - playerInfo.exitHomezone;
                 playerInfo.timeSpentInFarmzone += timeSpentInCurrentSession;
                 player.sendMessage("Returned to homezone");
+                bossBar.removePlayer(player);
 
             } else {
                 // player remains in homezone
