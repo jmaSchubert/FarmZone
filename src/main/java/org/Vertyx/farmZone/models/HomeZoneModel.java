@@ -22,4 +22,9 @@ public class HomeZoneModel {
     {
         return radius;
     }
+
+    public String getName()
+    {
+        return name;
+    }
 }

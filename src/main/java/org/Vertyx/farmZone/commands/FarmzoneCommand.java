@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class FarmzoneCommand implements CommandExecutor {
-    private FarmZoneManager manager;
+    private final FarmZoneManager manager;
 
     public FarmzoneCommand(FarmZoneManager manager) {
         this.manager = manager;
@@ -17,6 +17,13 @@ public class FarmzoneCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player player = (Player) sender;
+
+        if(args.length == 0 && manager.getPlayerInfo(player) != null)
+        {
+            player.sendMessage("Telporting to Farmzone...");
+            player.teleport(manager.getPlayerInfo(player).lastCoordinatesInFarmzone);
+            return true;
+        }
 
         switch (args[0]) {
             case "create":
@@ -37,6 +44,17 @@ public class FarmzoneCommand implements CommandExecutor {
                 }
                 break;
 
+            case "delete":
+                if (!args[1].isEmpty() && manager.deleteFarmzone(args[1]))
+                {
+                    sender.sendMessage("Farmzone deleted!");
+                } else
+                {
+                    sender.sendMessage("Invalid command. Usage: /farmzone delete <Name>");
+                    return false;
+                }
+                break;
+
             case "bossbarcolor":
                 manager.setBossBarColor(BarColor.valueOf(args[1]));
                 break;
@@ -49,10 +67,14 @@ public class FarmzoneCommand implements CommandExecutor {
                 manager.showBossbar(player);
                 break;
 
+            case "reset":
+                manager.resetFarmzoneTimer(player);
+                break;
+
             default:
                 // send player to last saved position in farmzone
                 // ask if their sure to teleport
-                sender.sendMessage("Invalid command. Usage: /farmzone create <Name> <radius>");
+                sender.sendMessage("Invalid command. Usage: /farmzone [create|delete|bossbarcolor|showbossbar|hidebossbar]");
                 return false;
         }
 

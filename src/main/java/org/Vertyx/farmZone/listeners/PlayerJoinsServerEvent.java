@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 public class PlayerJoinsServerEvent implements Listener {
-    private FarmZoneManager manager;
+    private final FarmZoneManager manager;
 
     public PlayerJoinsServerEvent(FarmZoneManager manager)
     {
@@ -19,6 +19,12 @@ public class PlayerJoinsServerEvent implements Listener {
     {
         Player player = event.getPlayer();
         player.sendMessage("Welcome to the server!");
+        if (manager.playerInFarmzone(player))
+        {
+            manager.showBossbar(player);
+            manager.setExitHomezoneOnJoin(player);
+            player.sendMessage("You're still in the Farmzone!");
+        }
     }
 
 }

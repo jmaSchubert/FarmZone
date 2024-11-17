@@ -4,6 +4,6 @@ main: org.Vertyx.farmZone.FarmZoneMain
 api-version: '1.21'
 commands:
   farmzone:
-    description: Create a new safe Area
-  debugfz:
-    description: debug my plugin
+    description: create, delete, bossbarcolor, showbossbar, hidebossbar
+  home:
+    description: Teleports you to your homezone

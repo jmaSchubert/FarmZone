@@ -3,14 +3,9 @@ package org.Vertyx.farmZone.listeners;
 import org.Vertyx.farmZone.FarmZoneMain;
 import org.Vertyx.farmZone.managers.FarmZoneManager;
 import org.Vertyx.farmZone.models.PlayerInfo;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
-
-import java.util.concurrent.TimeUnit;
 
 public class PlayerMoveTask implements Runnable{
     final private FarmZoneMain plugin;
@@ -28,8 +23,9 @@ public class PlayerMoveTask implements Runnable{
 
         PlayerInfo playerInfo = manager.getPlayerInfo(player);
         if (playerInfo == null) {
-            playerInfo = new PlayerInfo(false, player.getLocation(), 0, 0);
-            manager.setPlayerInfo(player, playerInfo);
+            playerInfo = new PlayerInfo(player.getUniqueId(), false, player.getLocation(), 0, 0);
+            player.sendMessage("PlayerInfo created!");
+            manager.setPlayerInfo(player.getUniqueId(), playerInfo);
         }
 
         boolean currentlyInFarmzone = manager.playerInFarmzone(player);
@@ -48,10 +44,12 @@ public class PlayerMoveTask implements Runnable{
             playerInfo.lastCoordinatesInFarmzone = playerLocation;
             long timeSpentInCurrentSession = currentTime - playerInfo.exitHomezone;
 
+            player.sendMessage("TimeSpent: " + playerInfo.timeSpentInFarmzone);
+            player.sendMessage("CurrentSession: " + timeSpentInCurrentSession);
 
             if (playerInfo.timeSpentInFarmzone + timeSpentInCurrentSession > FarmZoneManager.MAX_FARMZONE_TIME) {
                 // daily time exceeded
-                player.teleport(manager.activeHomezones.getFirst().getCenter());
+                player.teleport(manager.getFirstHomezone().getCenter());
                 player.sendMessage("Daily farmzone time exceeded!");
 
             } else {
@@ -76,17 +74,18 @@ public class PlayerMoveTask implements Runnable{
         }
 
         // Aktualisiere die PlayerInfo im Manager
-        manager.setPlayerInfo(player, playerInfo);
+        manager.setPlayerInfo(player.getUniqueId(), playerInfo);
     }
 
 
     @Override
     public void run() {
-        if (!manager.activeHomezones.isEmpty())
+        if (!manager.getActiveHomezones().isEmpty())
         {
             for (Player player : this.plugin.getServer().getOnlinePlayers()) {
                 updatePlayerInfo(player);
             }
         }
+
     }
 }
