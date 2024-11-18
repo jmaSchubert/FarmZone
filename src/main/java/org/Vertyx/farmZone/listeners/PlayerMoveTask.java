@@ -24,7 +24,6 @@ public class PlayerMoveTask implements Runnable{
         PlayerInfo playerInfo = manager.getPlayerInfo(player);
         if (playerInfo == null) {
             playerInfo = new PlayerInfo(player.getUniqueId(), false, player.getLocation(), 0, 0);
-            player.sendMessage("PlayerInfo created!");
             manager.setPlayerInfo(player.getUniqueId(), playerInfo);
         }
 
@@ -37,15 +36,12 @@ public class PlayerMoveTask implements Runnable{
             if (!playerInfo.inFarmzone) {
                 playerInfo.inFarmzone = true;
                 playerInfo.exitHomezone = currentTime;
-                player.sendMessage("You've entered the Farmzone!");
+                bossBar.setTitle("You're in the Farmzone!");
                 bossBar.addPlayer(player);
             }
 
             playerInfo.lastCoordinatesInFarmzone = playerLocation;
             long timeSpentInCurrentSession = currentTime - playerInfo.exitHomezone;
-
-            player.sendMessage("TimeSpent: " + playerInfo.timeSpentInFarmzone);
-            player.sendMessage("CurrentSession: " + timeSpentInCurrentSession);
 
             if (playerInfo.timeSpentInFarmzone + timeSpentInCurrentSession > FarmZoneManager.MAX_FARMZONE_TIME) {
                 // daily time exceeded
@@ -55,6 +51,7 @@ public class PlayerMoveTask implements Runnable{
             } else {
                 // player has leftover time
                 bossBar.setProgress((double)(FarmZoneManager.MAX_FARMZONE_TIME - (playerInfo.timeSpentInFarmzone + timeSpentInCurrentSession))/FarmZoneManager.MAX_FARMZONE_TIME);
+                // TODO: chat message on 1min and 10sec
                 // display leftovertime on critical time stamps (30min, 15min, 5min, 1min, 5s, 4s, 3s, 2s, 1s)
 //                player.sendMessage("Daily farmzone time remaining: " + TimeUnit.MILLISECONDS.toSeconds(FarmZoneManager.MAX_FARMZONE_TIME - (playerInfo.timeSpentInFarmzone + timeSpentInCurrentSession)) + "s");
             }

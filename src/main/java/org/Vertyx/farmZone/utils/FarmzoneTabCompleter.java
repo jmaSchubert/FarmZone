@@ -32,8 +32,8 @@ public class FarmzoneTabCompleter implements TabCompleter {
         // Check if executed Command was /farmzone
         if (args[0].isEmpty())
         {
-            suggestions.add("create");
-            suggestions.add("delete");
+//            suggestions.add("create");
+//            suggestions.add("delete");
             suggestions.add("bossbarcolor");
             suggestions.add("showbossbar");
             suggestions.add("hidebossbar");

@@ -26,13 +26,8 @@ public final class FarmZoneMain extends JavaPlugin {
         manager.loadData(dataFile);
 
         // Register Commands
-        // TODO: create /farmzone delete
-        // TODO: create /farmzone list
-        // TODO: create /farmzone enable
-        // TODO: create /farmzone disable
-        // TODO: create /home
         this.getCommand("farmzone").setExecutor(new FarmzoneCommand(manager));
-        this.getCommand("home").setExecutor(new HomeCommand(manager));
+        this.getCommand("home").setExecutor(new HomeCommand(manager, this));
         this.getCommand("farmzone").setTabCompleter(new FarmzoneTabCompleter(manager));
 //        this.getCommand("debugfz").setExecutor(new FarmzoneDebugCommands(manager));
 

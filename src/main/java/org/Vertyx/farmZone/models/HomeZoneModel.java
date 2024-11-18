@@ -1,5 +1,6 @@
 package org.Vertyx.farmZone.models;
 
+import jdk.jfr.Percentage;
 import org.bukkit.Location;
 
 public class HomeZoneModel {
@@ -27,4 +28,9 @@ public class HomeZoneModel {
     {
         return name;
     }
+
+//    @Override
+//    public String toString() {
+//        return "HomeZoneModel{" + "name='" + name + '\'' + ", center=" + center + ", radius=" + radius + '}';
+//    }
 }
