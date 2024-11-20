@@ -117,6 +117,10 @@ public class FarmzoneCommand implements CommandExecutor {
                 manager.resetFarmzoneTimer(player);
                 break;
 
+            case "distance":
+                player.sendMessage("Distanz zum Mittelpunkt: " + manager.getDistance(player));
+                break;
+
             case "help":
                 player.sendMessage("Showing help for farmzone commands: ");
 

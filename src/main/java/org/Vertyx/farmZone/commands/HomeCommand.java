@@ -32,9 +32,8 @@ public class HomeCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player player = (Player) sender;
 
-        if (manager.getPlayerInfo(player) != null && !manager.playerInFarmzone(player))
+        if (manager.getPlayerInfo(player) != null && manager.playerInFarmzone(player))
         {
-
             Location homezoneCenter = manager.getFirstHomezone().getCenter();
             if(homezoneCenter == null)
             {
@@ -42,7 +41,6 @@ public class HomeCommand implements CommandExecutor {
                 return false;
             }
 
-            // TODO player has to stand still for at least 3sec, particles 👣
             player.sendMessage("Returning Home in 3 seconds. Please stand still...");
 
             for (int i = 0; i < 60; i++) {
@@ -50,11 +48,12 @@ public class HomeCommand implements CommandExecutor {
                 plugin.getServer().getScheduler().runTaskLater(plugin, () -> playParticlesAndSounds(player, ticks), i);
             }
 
-            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            Location locationBeforeTeleport = player.getLocation();
 
-                if (player.getLocation().getX() == manager.getPlayerInfo(player).lastCoordinatesInFarmzone.getX() &&
-                        player.getLocation().getY() == manager.getPlayerInfo(player).lastCoordinatesInFarmzone.getY() &&
-                        player.getLocation().getZ() == manager.getPlayerInfo(player).lastCoordinatesInFarmzone.getZ()) {
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                if (player.getLocation().getX() == locationBeforeTeleport.getX() &&
+                        player.getLocation().getY() == locationBeforeTeleport.getY() &&
+                        player.getLocation().getZ() == locationBeforeTeleport.getZ()) {
                     player.sendMessage("Returning Home");
                     player.teleport(homezoneCenter);
                 } else {

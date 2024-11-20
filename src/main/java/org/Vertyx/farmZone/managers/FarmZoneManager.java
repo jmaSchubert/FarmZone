@@ -22,19 +22,18 @@ public class FarmZoneManager {
     private Map<UUID, PlayerInfo> playerInfoMap;
     private BossBar bossBar = Bukkit.createBossBar(" ", BarColor.GREEN, BarStyle.SOLID);
     private Map<String, HomeZoneModel> activeHomezones;
-
-    public static final long MAX_FARMZONE_TIME = 60 * 1000; // 1 minute in milliseconds
-
+    public static long MAX_FARMZONE_TIME = 60 * 60 * 1000; // 1 hour in milliseconds
 
 
-    private FarmZoneManager() {
+    private FarmZoneManager(File dataFile) {
         activeHomezones = new HashMap<>();
         playerInfoMap = new HashMap<>();
+        loadData(dataFile);
     }
 
-    public static synchronized FarmZoneManager getInstance() {
+    public static synchronized FarmZoneManager getInstance(File dataFile) {
         if (instance == null) {
-            instance = new FarmZoneManager();
+            instance = new FarmZoneManager(dataFile);
         }
         return instance;
     }
@@ -59,6 +58,13 @@ public class FarmZoneManager {
             System.out.println("SetPlayer error: " + e.getMessage());
         }
 
+    }
+
+    public double getDistance(Player player)
+    {
+        HomeZoneModel homezone = getFirstHomezone();
+        Location playerLocation = player.getLocation();
+        return Math.sqrt(Math.pow(player.getLocation().getX() - homezone.getCenter().getX(), 2) + Math.pow(playerLocation.getZ() - homezone.getCenter().getZ(), 2));
     }
 
     // Methods for handling player logic
@@ -150,6 +156,9 @@ public class FarmZoneManager {
     public void saveData(File file) {
         YamlConfiguration config = new YamlConfiguration();
 
+        // save FarmzoneTimeout
+        config.set("farmzoneTimeoutLong", MAX_FARMZONE_TIME);
+
         // save farmzone
         HomeZoneModel homezone = getFirstHomezone();
         if (!activeHomezones.isEmpty()) {
@@ -179,6 +188,16 @@ public class FarmZoneManager {
             return;
         }
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+        // get FarmzoneTimout constant
+        try {
+            MAX_FARMZONE_TIME = config.getLong("farmzoneTimeoutLong");
+        }
+        catch (Exception e)
+        {
+            MAX_FARMZONE_TIME = 90 * 60 * 1000; // default: 90 minutes
+        }
+
         // get farmzones
         String farmzoneKey = config.getConfigurationSection("farmzones").getKeys(false).iterator().next();
         HomeZoneModel homezone = new HomeZoneModel(
@@ -198,8 +217,8 @@ public class FarmZoneManager {
                     (Location) config.get("players." + key + ".lastCoordinatesInFarmzone"),
                     config.getLong("players." + key + ".exitHomezone"),
                     config.getLong("players." + key + ".timeSpentInFarmzone")
-
             );
+
             System.out.println("TimeSpent: " + info.timeSpentInFarmzone);
             setPlayerInfo(info.playerID, info);
         }

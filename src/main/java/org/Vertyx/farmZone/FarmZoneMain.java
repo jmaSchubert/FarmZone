@@ -10,7 +10,6 @@ import org.Vertyx.farmZone.commands.FarmzoneCommand;
 import org.Vertyx.farmZone.utils.FarmzoneTabCompleter;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
-
 import java.io.File;
 
 public final class FarmZoneMain extends JavaPlugin {
@@ -20,10 +19,11 @@ public final class FarmZoneMain extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        manager = FarmZoneManager.getInstance();
-        BukkitScheduler scheduler = this.getServer().getScheduler();
         dataFile = new File(getDataFolder(), "data.yml");
-        manager.loadData(dataFile);
+        manager = FarmZoneManager.getInstance(dataFile);
+        BukkitScheduler scheduler = this.getServer().getScheduler();
+
+//        manager.loadData(dataFile);
 
         // Register Commands
         this.getCommand("farmzone").setExecutor(new FarmzoneCommand(manager));
