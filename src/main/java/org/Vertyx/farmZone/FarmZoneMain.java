@@ -23,18 +23,15 @@ public final class FarmZoneMain extends JavaPlugin {
         manager = FarmZoneManager.getInstance(dataFile);
         BukkitScheduler scheduler = this.getServer().getScheduler();
 
-//        manager.loadData(dataFile);
-
         // Register Commands
         this.getCommand("farmzone").setExecutor(new FarmzoneCommand(manager));
         this.getCommand("home").setExecutor(new HomeCommand(manager, this));
         this.getCommand("farmzone").setTabCompleter(new FarmzoneTabCompleter(manager));
-//        this.getCommand("debugfz").setExecutor(new FarmzoneDebugCommands(manager));
 
         // Register Events
         getServer().getPluginManager().registerEvents(new PlayerJoinsServerEvent(manager), this);
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(manager), this);
-        scheduler.runTaskTimer(this, new PlayerMoveTask(this, manager), 0, 40);
+        scheduler.runTaskTimer(this, new PlayerMoveTask(this, manager), 0, 100);
     }
 
     @Override

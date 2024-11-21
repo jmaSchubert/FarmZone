@@ -27,8 +27,8 @@ public class PlayerMoveTask implements Runnable{
             manager.setPlayerInfo(player.getUniqueId(), playerInfo);
         }
 
-        boolean currentlyInFarmzone = manager.playerInFarmzone(player);
         Location playerLocation = player.getLocation();
+        boolean currentlyInFarmzone = manager.locationInFarmzone(playerLocation);
         long currentTime = System.currentTimeMillis();
 
         if (currentlyInFarmzone) {
@@ -45,8 +45,8 @@ public class PlayerMoveTask implements Runnable{
 
             if (playerInfo.timeSpentInFarmzone + timeSpentInCurrentSession > FarmZoneManager.MAX_FARMZONE_TIME) {
                 // daily time exceeded
-                player.teleport(manager.getFirstHomezone().getCenter());
-                player.sendMessage("Daily farmzone time exceeded!");
+                player.teleport(manager.getFirstHomezone().getPreferredHome(playerInfo));
+                player.sendMessage("[!] Daily farmzone time exceeded!");
 
             } else {
                 // player has leftover time
@@ -61,7 +61,7 @@ public class PlayerMoveTask implements Runnable{
                 playerInfo.inFarmzone = false;
                 long timeSpentInCurrentSession = currentTime - playerInfo.exitHomezone;
                 playerInfo.timeSpentInFarmzone += timeSpentInCurrentSession;
-                player.sendMessage("Returned to homezone");
+                player.sendMessage("[!] Returned to homezone");
                 bossBar.removePlayer(player);
 
             } else {

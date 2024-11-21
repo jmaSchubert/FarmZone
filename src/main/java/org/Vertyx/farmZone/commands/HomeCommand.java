@@ -1,6 +1,7 @@
 package org.Vertyx.farmZone.commands;
 
 import org.Vertyx.farmZone.managers.FarmZoneManager;
+import org.Vertyx.farmZone.models.HomeZoneModel;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -31,33 +32,33 @@ public class HomeCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player player = (Player) sender;
+        Location locationBeforeTeleport = player.getLocation();
 
-        if (manager.getPlayerInfo(player) != null && manager.playerInFarmzone(player))
+        if (manager.getPlayerInfo(player) != null && manager.locationInFarmzone(locationBeforeTeleport))
         {
-            Location homezoneCenter = manager.getFirstHomezone().getCenter();
-            if(homezoneCenter == null)
+            HomeZoneModel homezone = manager.getFirstHomezone();
+            if(homezone == null)
             {
-                player.sendMessage("Can't return home, because there is none");
+                player.sendMessage("[!] Can't return home, because there is none");
                 return false;
             }
 
-            player.sendMessage("Returning Home in 3 seconds. Please stand still...");
+            player.sendMessage("[!] Returning Home in 3 seconds. Please stand still...");
+            Location homeLocation = homezone.getPreferredHome(manager.getPlayerInfo(player));
 
             for (int i = 0; i < 60; i++) {
                 int ticks = i;
                 plugin.getServer().getScheduler().runTaskLater(plugin, () -> playParticlesAndSounds(player, ticks), i);
             }
 
-            Location locationBeforeTeleport = player.getLocation();
 
             plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                 if (player.getLocation().getX() == locationBeforeTeleport.getX() &&
                         player.getLocation().getY() == locationBeforeTeleport.getY() &&
                         player.getLocation().getZ() == locationBeforeTeleport.getZ()) {
-                    player.sendMessage("Returning Home");
-                    player.teleport(homezoneCenter);
+                    player.teleport(homeLocation);
                 } else {
-                    player.sendMessage("You moved! Teleportation cancelled.");
+                    player.sendMessage("[!] You moved! Teleportation cancelled.");
                 }
             }, 60L); // 60 ticks = 3 seconds
             return true;

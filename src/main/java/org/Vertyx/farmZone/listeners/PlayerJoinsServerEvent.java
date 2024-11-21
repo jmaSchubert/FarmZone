@@ -18,12 +18,11 @@ public class PlayerJoinsServerEvent implements Listener {
     public void onPlayerJoinEvent(PlayerJoinEvent event)
     {
         Player player = event.getPlayer();
-        player.sendMessage("Welcome to the server!");
-        if (manager.playerInFarmzone(player))
+        if (manager.locationInFarmzone(player.getLocation()))
         {
             manager.showBossbar(player);
             manager.setExitHomezoneOnJoin(player);
-            player.sendMessage("You're still in the Farmzone!");
+            player.sendMessage("[!] You're still in the Farmzone!");
         }
     }
 

@@ -20,7 +20,7 @@ public class FarmZoneManager {
     private static FarmZoneManager instance;
     private String firstHomezoneName;
     private Map<UUID, PlayerInfo> playerInfoMap;
-    private BossBar bossBar = Bukkit.createBossBar(" ", BarColor.GREEN, BarStyle.SOLID);
+    private BossBar bossBar = Bukkit.createBossBar("You're in the Farmzone!", BarColor.GREEN, BarStyle.SOLID);
     private Map<String, HomeZoneModel> activeHomezones;
     public static long MAX_FARMZONE_TIME = 60 * 60 * 1000; // 1 hour in milliseconds
 
@@ -64,25 +64,22 @@ public class FarmZoneManager {
     {
         HomeZoneModel homezone = getFirstHomezone();
         Location playerLocation = player.getLocation();
-        return Math.sqrt(Math.pow(player.getLocation().getX() - homezone.getCenter().getX(), 2) + Math.pow(playerLocation.getZ() - homezone.getCenter().getZ(), 2));
+        Location homeLocation = homezone.getCenter();
+        return Math.sqrt(Math.pow(playerLocation.getX() - homeLocation.getX(), 2) + Math.pow(playerLocation.getZ() - homeLocation.getZ(), 2));
     }
 
     // Methods for handling player logic
-    public boolean playerInFarmzone(Player player)
+    public boolean locationInFarmzone(Location location)
     {
         if (activeHomezones.isEmpty())
         {
-            player.sendMessage("ERROR: No active farmzones");
             return false;
         }
 
-        Location playerLocation = player.getLocation();
-
-        // In the future: have multiple homezones at once
-        // Now: only support one main farmzone, and that's the first created
         HomeZoneModel homezone = getFirstHomezone();
+
         if (homezone != null) {
-            double distance = Math.sqrt(Math.pow(playerLocation.getX() - homezone.getCenter().getX(), 2) + Math.pow(playerLocation.getZ() - homezone.getCenter().getZ(), 2));
+            double distance = Math.sqrt(Math.pow(location.getX() - homezone.getCenter().getX(), 2) + Math.pow(location.getZ() - homezone.getCenter().getZ(), 2));
             return distance > homezone.getRadius();
         }
 
@@ -160,10 +157,12 @@ public class FarmZoneManager {
         config.set("farmzoneTimeoutLong", MAX_FARMZONE_TIME);
 
         // save farmzone
+        // TODO save players set bossbar color
         HomeZoneModel homezone = getFirstHomezone();
         if (!activeHomezones.isEmpty()) {
             config.set("farmzones." + homezone.getName() + ".name", homezone.getName());
             config.set("farmzones." + homezone.getName() + ".centerCoords", homezone.getCenter());
+            config.set("farmzones." + homezone.getName() + ".prefferedHome", homezone.getDefaultHomeLocation());
             config.set("farmzones." + homezone.getName() + ".radius", homezone.getRadius());
         }
 
@@ -175,6 +174,7 @@ public class FarmZoneManager {
             config.set("players." + playerID + ".lastCoordinatesInFarmzone", info.lastCoordinatesInFarmzone);
             config.set("players." + playerID + ".timeSpentInFarmzone", info.timeSpentInFarmzone);
             config.set("players." + playerID + ".exitHomezone", info.exitHomezone);
+            config.set("players." + playerID + ".preferredHome", info.preferredHomeLocation);
         }
         try {
             config.save(file);
@@ -199,6 +199,7 @@ public class FarmZoneManager {
         }
 
         // get farmzones
+        // TODO add error handling
         String farmzoneKey = config.getConfigurationSection("farmzones").getKeys(false).iterator().next();
         HomeZoneModel homezone = new HomeZoneModel(
                 config.get("farmzones." + farmzoneKey + ".name").toString(),
@@ -211,6 +212,7 @@ public class FarmZoneManager {
 
         // get playerInfos
         for (String key : config.getConfigurationSection("players").getKeys(false)) {
+            // TODO add error handling
             PlayerInfo info = new PlayerInfo(
                     UUID.fromString(key),
                     config.getBoolean("players." + key + ".inFarmzone"),
@@ -218,6 +220,7 @@ public class FarmZoneManager {
                     config.getLong("players." + key + ".exitHomezone"),
                     config.getLong("players." + key + ".timeSpentInFarmzone")
             );
+            info.preferredHomeLocation = (Location) config.get("player." + key + ".preferredHome");
 
             System.out.println("TimeSpent: " + info.timeSpentInFarmzone);
             setPlayerInfo(info.playerID, info);
