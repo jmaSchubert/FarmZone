@@ -18,8 +18,12 @@ public class HomeZoneModel {
     // check if user has preferred home else default
     public Location getPreferredHome(PlayerInfo info)
     {
-        if (info == null || info.preferredHomeLocation == null )
+        if (info == null || info.preferredHomeLocation == null)
         {
+            if (defaultHomeLocation == null)
+            {
+                return getCenter();
+            }
             return this.defaultHomeLocation;
         }
         else

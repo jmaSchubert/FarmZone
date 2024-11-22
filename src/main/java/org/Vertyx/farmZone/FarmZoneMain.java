@@ -10,18 +10,22 @@ import org.Vertyx.farmZone.commands.FarmzoneCommand;
 import org.Vertyx.farmZone.utils.FarmzoneTabCompleter;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
+
 import java.io.File;
 
 public final class FarmZoneMain extends JavaPlugin {
 
     private FarmZoneManager manager;
     private File dataFile;
+    private BukkitScheduler scheduler;
+    BukkitTask task;
 
     @Override
     public void onEnable() {
         dataFile = new File(getDataFolder(), "data.yml");
         manager = FarmZoneManager.getInstance(dataFile);
-        BukkitScheduler scheduler = this.getServer().getScheduler();
+        scheduler = this.getServer().getScheduler();
 
         // Register Commands
         this.getCommand("farmzone").setExecutor(new FarmzoneCommand(manager));
@@ -31,12 +35,13 @@ public final class FarmZoneMain extends JavaPlugin {
         // Register Events
         getServer().getPluginManager().registerEvents(new PlayerJoinsServerEvent(manager), this);
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(manager), this);
-        scheduler.runTaskTimer(this, new PlayerMoveTask(this, manager), 0, 100);
+        task = scheduler.runTaskTimer(this, new PlayerMoveTask(this, manager), 0, 100);
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
         manager.saveData(dataFile);
+        scheduler.cancelTask(task.getTaskId());
     }
 }

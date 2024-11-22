@@ -7,6 +7,8 @@ import org.bukkit.Location;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
+import java.time.LocalDate;
+
 public class PlayerMoveTask implements Runnable{
     final private FarmZoneMain plugin;
     final private FarmZoneManager manager;
@@ -25,6 +27,12 @@ public class PlayerMoveTask implements Runnable{
         if (playerInfo == null) {
             playerInfo = new PlayerInfo(player.getUniqueId(), false, player.getLocation(), 0, 0);
             manager.setPlayerInfo(player.getUniqueId(), playerInfo);
+        }
+
+        if (LocalDate.now().isAfter(manager.getLastFarmzoneUpdate())) {
+            manager.resetFarmzoneTimer();
+            manager.setLastFarmzoneUpdate(LocalDate.now());
+            player.sendMessage("[!] Timeout has been reset!");
         }
 
         Location playerLocation = player.getLocation();
@@ -50,10 +58,12 @@ public class PlayerMoveTask implements Runnable{
 
             } else {
                 // player has leftover time
-                bossBar.setProgress((double)(FarmZoneManager.MAX_FARMZONE_TIME - (playerInfo.timeSpentInFarmzone + timeSpentInCurrentSession))/FarmZoneManager.MAX_FARMZONE_TIME);
-                // TODO: chat message on 1min and 10sec
+                long leftoverTime = FarmZoneManager.MAX_FARMZONE_TIME - (playerInfo.timeSpentInFarmzone + timeSpentInCurrentSession);
+                bossBar.setProgress((double)leftoverTime/FarmZoneManager.MAX_FARMZONE_TIME);
                 // display leftovertime on critical time stamps (30min, 15min, 5min, 1min, 5s, 4s, 3s, 2s, 1s)
-//                player.sendMessage("Daily farmzone time remaining: " + TimeUnit.MILLISECONDS.toSeconds(FarmZoneManager.MAX_FARMZONE_TIME - (playerInfo.timeSpentInFarmzone + timeSpentInCurrentSession)) + "s");
+                if (leftoverTime <= 15 * 60 * 1000 && leftoverTime > 14 * 60 * 1000) { player.sendMessage("[!] Remaining time: 15min"); }
+                else if (leftoverTime <= 1 * 60 * 1000 && leftoverTime > 59 * 1000) { player.sendMessage("[!] Remaining time: 1min"); }
+                else if (leftoverTime <= 10 * 1000 && leftoverTime > 9 * 1000) { player.sendMessage("[!] Remaining time: 10sec"); }
             }
         } else {
             // player returnes to homezone

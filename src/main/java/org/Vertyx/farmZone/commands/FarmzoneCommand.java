@@ -105,7 +105,7 @@ public class FarmzoneCommand implements CommandExecutor {
                     player.sendMessage("[!] You do not have the permission to execute this command!");
                     return false;
                 }
-                manager.resetFarmzoneTimer(player);
+                manager.resetFarmzoneTimer();
                 break;
 
             case "bossbarcolor":
@@ -125,7 +125,7 @@ public class FarmzoneCommand implements CommandExecutor {
                 // check if Location is even in the homezone
                 if (!manager.locationInFarmzone(currentPlayerLocation))
                 {
-                    manager.getFirstHomezone().setDefaultHomeLocation(currentPlayerLocation);
+                    manager.getPlayerInfo(player).preferredHomeLocation = currentPlayerLocation;
                     player.sendMessage("[!] Set home location to current position!");
                     return true;
                 } else
@@ -144,7 +144,7 @@ public class FarmzoneCommand implements CommandExecutor {
 
                 if (!manager.locationInFarmzone(currentPlayerLocation))
                 {
-                    manager.getPlayerInfo(player).preferredHomeLocation = currentPlayerLocation;
+                    manager.getFirstHomezone().setDefaultHomeLocation(currentPlayerLocation);
                     player.sendMessage("[!] Set default home location to current position!");
                     return true;
                 } else

@@ -11,6 +11,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.*;
 
 
@@ -22,6 +23,7 @@ public class FarmZoneManager {
     private Map<UUID, PlayerInfo> playerInfoMap;
     private BossBar bossBar = Bukkit.createBossBar("You're in the Farmzone!", BarColor.GREEN, BarStyle.SOLID);
     private Map<String, HomeZoneModel> activeHomezones;
+    private LocalDate lastFarmzoneUpdate;
     public static long MAX_FARMZONE_TIME = 60 * 60 * 1000; // 1 hour in milliseconds
 
 
@@ -67,6 +69,10 @@ public class FarmZoneManager {
         Location homeLocation = homezone.getCenter();
         return Math.sqrt(Math.pow(playerLocation.getX() - homeLocation.getX(), 2) + Math.pow(playerLocation.getZ() - homeLocation.getZ(), 2));
     }
+
+    public LocalDate getLastFarmzoneUpdate() { return this.lastFarmzoneUpdate; }
+
+    public void setLastFarmzoneUpdate(LocalDate date) { lastFarmzoneUpdate = date; }
 
     // Methods for handling player logic
     public boolean locationInFarmzone(Location location)
@@ -136,14 +142,11 @@ public class FarmZoneManager {
         bossBar.removePlayer(player);
     }
 
-    public void resetFarmzoneTimer(Player player)
+    public void resetFarmzoneTimer()
     {
-        if (player.getName().equals("Darkify_"))
+        for (PlayerInfo info : playerInfoMap.values())
         {
-            for (PlayerInfo info : playerInfoMap.values())
-            {
-                info.timeSpentInFarmzone = 0;
-            }
+            info.timeSpentInFarmzone = 0;
         }
     }
 
@@ -155,6 +158,7 @@ public class FarmZoneManager {
 
         // save FarmzoneTimeout
         config.set("farmzoneTimeoutLong", MAX_FARMZONE_TIME);
+        config.set("lastFarmzoneUpdate", lastFarmzoneUpdate.toString());
 
         // save farmzone
         // TODO save players set bossbar color
@@ -162,7 +166,7 @@ public class FarmZoneManager {
         if (!activeHomezones.isEmpty()) {
             config.set("farmzones." + homezone.getName() + ".name", homezone.getName());
             config.set("farmzones." + homezone.getName() + ".centerCoords", homezone.getCenter());
-            config.set("farmzones." + homezone.getName() + ".prefferedHome", homezone.getDefaultHomeLocation());
+            config.set("farmzones." + homezone.getName() + ".defaultHome", homezone.getDefaultHomeLocation());
             config.set("farmzones." + homezone.getName() + ".radius", homezone.getRadius());
         }
 
@@ -192,40 +196,48 @@ public class FarmZoneManager {
         // get FarmzoneTimout constant
         try {
             MAX_FARMZONE_TIME = config.getLong("farmzoneTimeoutLong");
+            lastFarmzoneUpdate = LocalDate.parse(config.get("lastFarmzoneUpdate").toString());
         }
         catch (Exception e)
         {
             MAX_FARMZONE_TIME = 90 * 60 * 1000; // default: 90 minutes
+            lastFarmzoneUpdate = LocalDate.now();
         }
 
         // get farmzones
-        // TODO add error handling
-        String farmzoneKey = config.getConfigurationSection("farmzones").getKeys(false).iterator().next();
-        HomeZoneModel homezone = new HomeZoneModel(
-                config.get("farmzones." + farmzoneKey + ".name").toString(),
-                (Location) config.get("farmzones." + farmzoneKey + ".centerCoords"),
-                (Double) config.get("farmzones." + farmzoneKey + ".radius")
-        );
+        try {
+            String farmzoneKey = config.getConfigurationSection("farmzones").getKeys(false).iterator().next();
+            HomeZoneModel homezone = new HomeZoneModel(
+                    config.get("farmzones." + farmzoneKey + ".name").toString(),
+                    (Location) config.get("farmzones." + farmzoneKey + ".centerCoords"),
+                    (Double) config.get("farmzones." + farmzoneKey + ".radius")
+            );
 
-        activeHomezones.put(homezone.getName(), homezone);
-        firstHomezoneName = homezone.getName();
+            homezone.setDefaultHomeLocation( (Location) config.get("farmzones." + farmzoneKey + ".defaultHome"));
+            activeHomezones.put(homezone.getName(), homezone);
+            firstHomezoneName = homezone.getName();
+        } catch (Exception e) {
+            System.out.println("Could not recreate Homezone from File!");
+        }
+
 
         // get playerInfos
+        int i = 0;
         for (String key : config.getConfigurationSection("players").getKeys(false)) {
-            // TODO add error handling
-            PlayerInfo info = new PlayerInfo(
-                    UUID.fromString(key),
-                    config.getBoolean("players." + key + ".inFarmzone"),
-                    (Location) config.get("players." + key + ".lastCoordinatesInFarmzone"),
-                    config.getLong("players." + key + ".exitHomezone"),
-                    config.getLong("players." + key + ".timeSpentInFarmzone")
-            );
-            info.preferredHomeLocation = (Location) config.get("player." + key + ".preferredHome");
-
-            System.out.println("TimeSpent: " + info.timeSpentInFarmzone);
-            setPlayerInfo(info.playerID, info);
+            try {
+                PlayerInfo info = new PlayerInfo(
+                        UUID.fromString(key),
+                        config.getBoolean("players." + key + ".inFarmzone"),
+                        (Location) config.get("players." + key + ".lastCoordinatesInFarmzone"),
+                        config.getLong("players." + key + ".exitHomezone"),
+                        config.getLong("players." + key + ".timeSpentInFarmzone")
+                );
+                info.preferredHomeLocation = (Location) config.get("player." + key + ".preferredHome");
+                setPlayerInfo(info.playerID, info);
+            } catch (Exception e)
+            {
+                System.out.println("Can not create PlayerInfo of player [ " + ++i + " ]");
+            }
         }
     }
-
-
 }
