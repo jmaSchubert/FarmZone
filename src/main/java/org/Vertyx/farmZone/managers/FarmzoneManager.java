@@ -2,10 +2,7 @@ package org.Vertyx.farmZone.managers;
 
 import org.Vertyx.farmZone.models.HomeZoneModel;
 import org.Vertyx.farmZone.models.PlayerInfo;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -15,27 +12,27 @@ import java.time.LocalDate;
 import java.util.*;
 
 
-public class FarmZoneManager {
+public class FarmzoneManager {
 
     // Data structure to store player information
-    private static FarmZoneManager instance;
+    private static FarmzoneManager instance;
     private String firstHomezoneName;
     private Map<UUID, PlayerInfo> playerInfoMap;
-    private BossBar bossBar = Bukkit.createBossBar("You're in the Farmzone!", BarColor.GREEN, BarStyle.SOLID);
+    private BossBar bossBar;
     private Map<String, HomeZoneModel> activeHomezones;
     private LocalDate lastFarmzoneUpdate;
     public static long MAX_FARMZONE_TIME = 60 * 60 * 1000; // 1 hour in milliseconds
 
 
-    private FarmZoneManager(File dataFile) {
+    private FarmzoneManager(File dataFile) {
         activeHomezones = new HashMap<>();
         playerInfoMap = new HashMap<>();
         loadData(dataFile);
     }
 
-    public static synchronized FarmZoneManager getInstance(File dataFile) {
+    public static synchronized FarmzoneManager getInstance(File dataFile) {
         if (instance == null) {
-            instance = new FarmZoneManager(dataFile);
+            instance = new FarmzoneManager(dataFile);
         }
         return instance;
     }
@@ -123,24 +120,6 @@ public class FarmZoneManager {
         return true;
     }
 
-    public BossBar getBossBar()
-    {
-        return this.bossBar;
-    }
-
-    public void setBossBarColor(BarColor color) {
-        bossBar.setColor(color);
-    }
-
-    public void showBossbar(Player player)
-    {
-        bossBar.addPlayer(player);
-    }
-
-    public void hideBossbar(Player player)
-    {
-        bossBar.removePlayer(player);
-    }
 
     public void resetFarmzoneTimer()
     {

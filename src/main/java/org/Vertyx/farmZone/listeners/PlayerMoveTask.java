@@ -1,7 +1,7 @@
 package org.Vertyx.farmZone.listeners;
 
-import org.Vertyx.farmZone.FarmZoneMain;
-import org.Vertyx.farmZone.managers.FarmZoneManager;
+import org.Vertyx.farmZone.FarmzoneMain;
+import org.Vertyx.farmZone.managers.FarmzoneManager;
 import org.Vertyx.farmZone.models.PlayerInfo;
 import org.bukkit.Location;
 import org.bukkit.boss.BossBar;
@@ -10,15 +10,13 @@ import org.bukkit.entity.Player;
 import java.time.LocalDate;
 
 public class PlayerMoveTask implements Runnable{
-    final private FarmZoneMain plugin;
-    final private FarmZoneManager manager;
-    final private BossBar bossBar;
+    final private FarmzoneMain plugin;
+    final private FarmzoneManager manager;
 
-    public PlayerMoveTask(FarmZoneMain plugin, FarmZoneManager manager)
+    public PlayerMoveTask(FarmzoneMain plugin, FarmzoneManager manager)
     {
         this.plugin = plugin;
         this.manager = manager;
-        this.bossBar = manager.getBossBar();
     }
 
     public void updatePlayerInfo(Player player) {
@@ -27,6 +25,13 @@ public class PlayerMoveTask implements Runnable{
         if (playerInfo == null) {
             playerInfo = new PlayerInfo(player.getUniqueId(), false, player.getLocation(), 0, 0);
             manager.setPlayerInfo(player.getUniqueId(), playerInfo);
+        }
+
+        BossBar playerBossBar = playerInfo.getBossBar();
+        player.sendMessage("Player " + player.getName() + " is in Bossbar: ");
+        for (Player playerWithBossbar : playerBossBar.getPlayers())
+        {
+            player.sendMessage("  " + playerWithBossbar.getName());
         }
 
         if (LocalDate.now().isAfter(manager.getLastFarmzoneUpdate())) {
@@ -44,22 +49,23 @@ public class PlayerMoveTask implements Runnable{
             if (!playerInfo.inFarmzone) {
                 playerInfo.inFarmzone = true;
                 playerInfo.exitHomezone = currentTime;
-                bossBar.setTitle("You're in the Farmzone!");
-                bossBar.addPlayer(player);
+                playerBossBar.setTitle("You're in the Farmzone!");
+                playerBossBar.addPlayer(player);
             }
 
             playerInfo.lastCoordinatesInFarmzone = playerLocation;
             long timeSpentInCurrentSession = currentTime - playerInfo.exitHomezone;
 
-            if (playerInfo.timeSpentInFarmzone + timeSpentInCurrentSession > FarmZoneManager.MAX_FARMZONE_TIME) {
+            if (playerInfo.timeSpentInFarmzone + timeSpentInCurrentSession > FarmzoneManager.MAX_FARMZONE_TIME) {
                 // daily time exceeded
                 player.teleport(manager.getFirstHomezone().getPreferredHome(playerInfo));
                 player.sendMessage("[!] Daily farmzone time exceeded!");
 
             } else {
                 // player has leftover time
-                long leftoverTime = FarmZoneManager.MAX_FARMZONE_TIME - (playerInfo.timeSpentInFarmzone + timeSpentInCurrentSession);
-                bossBar.setProgress((double)leftoverTime/FarmZoneManager.MAX_FARMZONE_TIME);
+                long leftoverTime = FarmzoneManager.MAX_FARMZONE_TIME - (playerInfo.timeSpentInFarmzone + timeSpentInCurrentSession);
+                playerBossBar.setProgress((double)leftoverTime/ FarmzoneManager.MAX_FARMZONE_TIME);
+                playerBossBar.setTitle("Remaining time: " + (leftoverTime / 60000) + " minutes");
                 // display leftovertime on critical time stamps (30min, 15min, 5min, 1min, 5s, 4s, 3s, 2s, 1s)
                 if (leftoverTime <= 15 * 60 * 1000 && leftoverTime > 14 * 60 * 1000) { player.sendMessage("[!] Remaining time: 15min"); }
                 else if (leftoverTime <= 1 * 60 * 1000 && leftoverTime > 59 * 1000) { player.sendMessage("[!] Remaining time: 1min"); }
@@ -72,7 +78,7 @@ public class PlayerMoveTask implements Runnable{
                 long timeSpentInCurrentSession = currentTime - playerInfo.exitHomezone;
                 playerInfo.timeSpentInFarmzone += timeSpentInCurrentSession;
                 player.sendMessage("[!] Returned to homezone");
-                bossBar.removePlayer(player);
+                playerBossBar.removePlayer(player);
 
             } else {
                 // player remains in homezone

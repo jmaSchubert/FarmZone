@@ -1,6 +1,6 @@
 package org.Vertyx.farmZone.utils;
 
-import org.Vertyx.farmZone.managers.FarmZoneManager;
+import org.Vertyx.farmZone.managers.FarmzoneManager;
 import org.Vertyx.farmZone.models.HomeZoneModel;
 import org.bukkit.boss.BarColor;
 import org.bukkit.command.Command;
@@ -13,9 +13,9 @@ import java.util.List;
 
 public class FarmzoneTabCompleter implements TabCompleter {
 
-    FarmZoneManager manager;
+    FarmzoneManager manager;
 
-    public FarmzoneTabCompleter(FarmZoneManager manager)
+    public FarmzoneTabCompleter(FarmzoneManager manager)
     {
         this.manager = manager;
     }

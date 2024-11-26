@@ -5,7 +5,7 @@ import org.Vertyx.farmZone.commands.HomeCommand;
 import org.Vertyx.farmZone.listeners.PlayerJoinsServerEvent;
 import org.Vertyx.farmZone.listeners.PlayerMoveTask;
 import org.Vertyx.farmZone.listeners.PlayerQuitListener;
-import org.Vertyx.farmZone.managers.FarmZoneManager;
+import org.Vertyx.farmZone.managers.FarmzoneManager;
 import org.Vertyx.farmZone.commands.FarmzoneCommand;
 import org.Vertyx.farmZone.utils.FarmzoneTabCompleter;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,9 +14,9 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 
-public final class FarmZoneMain extends JavaPlugin {
+public final class FarmzoneMain extends JavaPlugin {
 
-    private FarmZoneManager manager;
+    private FarmzoneManager manager;
     private File dataFile;
     private BukkitScheduler scheduler;
     BukkitTask task;
@@ -24,7 +24,7 @@ public final class FarmZoneMain extends JavaPlugin {
     @Override
     public void onEnable() {
         dataFile = new File(getDataFolder(), "data.yml");
-        manager = FarmZoneManager.getInstance(dataFile);
+        manager = FarmzoneManager.getInstance(dataFile);
         scheduler = this.getServer().getScheduler();
 
         // Register Commands
@@ -35,7 +35,7 @@ public final class FarmZoneMain extends JavaPlugin {
         // Register Events
         getServer().getPluginManager().registerEvents(new PlayerJoinsServerEvent(manager), this);
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(manager), this);
-        task = scheduler.runTaskTimer(this, new PlayerMoveTask(this, manager), 0, 100);
+        task = scheduler.runTaskTimer(this, new PlayerMoveTask(this, manager), 0, 200);
     }
 
     @Override

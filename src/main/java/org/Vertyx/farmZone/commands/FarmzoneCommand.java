@@ -2,7 +2,7 @@ package org.Vertyx.farmZone.commands;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.Vertyx.farmZone.managers.FarmZoneManager;
+import org.Vertyx.farmZone.managers.FarmzoneManager;
 import org.bukkit.Location;
 import org.bukkit.boss.BarColor;
 import org.bukkit.command.Command;
@@ -11,9 +11,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class FarmzoneCommand implements CommandExecutor {
-    private final FarmZoneManager manager;
+    private final FarmzoneManager manager;
 
-    public FarmzoneCommand(FarmZoneManager manager) {
+    public FarmzoneCommand(FarmzoneManager manager) {
         this.manager = manager;
     }
 
@@ -109,15 +109,15 @@ public class FarmzoneCommand implements CommandExecutor {
                 break;
 
             case "bossbarcolor":
-                manager.setBossBarColor(BarColor.valueOf(args[1]));
+                manager.getPlayerInfo(player).setBossBarColor(BarColor.valueOf(args[1]));
                 break;
 
             case "hidebossbar":
-                manager.hideBossbar(player);
+                manager.getPlayerInfo(player).hideBossbar(player);
                 break;
 
             case "showbossbar":
-                manager.showBossbar(player);
+                manager.getPlayerInfo(player).showBossbar(player);
                 break;
 
             case "sethome":
@@ -130,9 +130,8 @@ public class FarmzoneCommand implements CommandExecutor {
                     return true;
                 } else
                 {
-                    player.sendMessage("[!] You're not in the homezone though :shrug:");
+                    player.sendMessage("[!] You're not in the homezone though ¯\\_(ツ)_/¯");
                 }
-
                 break;
 
             case "setdefault":
@@ -149,7 +148,7 @@ public class FarmzoneCommand implements CommandExecutor {
                     return true;
                 } else
                 {
-                    player.sendMessage("You're not in the homezone though :shrug:");
+                    player.sendMessage("You're not in the homezone though ¯\\_(ツ)_/¯");
                 }
 
                 manager.getFirstHomezone().setDefaultHomeLocation(currentPlayerLocation);

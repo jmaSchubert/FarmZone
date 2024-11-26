@@ -1,6 +1,6 @@
 package org.Vertyx.farmZone.commands;
 
-import org.Vertyx.farmZone.managers.FarmZoneManager;
+import org.Vertyx.farmZone.managers.FarmzoneManager;
 import org.Vertyx.farmZone.models.HomeZoneModel;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -12,10 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 public class HomeCommand implements CommandExecutor {
-    FarmZoneManager manager;
+    FarmzoneManager manager;
     Plugin plugin;
 
-    public HomeCommand(FarmZoneManager manager, Plugin plugin)
+    public HomeCommand(FarmzoneManager manager, Plugin plugin)
     {
         this.manager = manager;
         this.plugin = plugin;
