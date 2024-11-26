@@ -28,7 +28,6 @@ public class PlayerMoveTask implements Runnable{
         }
 
         BossBar playerBossBar = playerInfo.getBossBar();
-        player.sendMessage("Player " + player.getName() + " is in Bossbar: ");
         for (Player playerWithBossbar : playerBossBar.getPlayers())
         {
             player.sendMessage("  " + playerWithBossbar.getName());

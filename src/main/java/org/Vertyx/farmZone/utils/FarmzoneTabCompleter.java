@@ -1,7 +1,7 @@
 package org.Vertyx.farmZone.utils;
 
 import org.Vertyx.farmZone.managers.FarmzoneManager;
-import org.Vertyx.farmZone.models.HomeZoneModel;
+import org.Vertyx.farmZone.models.HomezoneModel;
 import org.bukkit.boss.BarColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -57,7 +57,7 @@ public class FarmzoneTabCompleter implements TabCompleter {
         }
         else if (args[0].equalsIgnoreCase("delete"))
         {
-            for (HomeZoneModel homezone : manager.getActiveHomezones().values())
+            for (HomezoneModel homezone : manager.getActiveHomezones().values())
             {
                 suggestions.add(homezone.getName());
             }

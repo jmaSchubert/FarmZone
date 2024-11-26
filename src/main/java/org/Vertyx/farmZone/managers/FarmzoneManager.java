@@ -1,6 +1,6 @@
 package org.Vertyx.farmZone.managers;
 
-import org.Vertyx.farmZone.models.HomeZoneModel;
+import org.Vertyx.farmZone.models.HomezoneModel;
 import org.Vertyx.farmZone.models.PlayerInfo;
 import org.bukkit.Location;
 import org.bukkit.boss.BossBar;
@@ -19,7 +19,7 @@ public class FarmzoneManager {
     private String firstHomezoneName;
     private Map<UUID, PlayerInfo> playerInfoMap;
     private BossBar bossBar;
-    private Map<String, HomeZoneModel> activeHomezones;
+    private Map<String, HomezoneModel> activeHomezones;
     private LocalDate lastFarmzoneUpdate;
     public static long MAX_FARMZONE_TIME = 60 * 60 * 1000; // 1 hour in milliseconds
 
@@ -61,7 +61,7 @@ public class FarmzoneManager {
 
     public double getDistance(Player player)
     {
-        HomeZoneModel homezone = getFirstHomezone();
+        HomezoneModel homezone = getFirstHomezone();
         Location playerLocation = player.getLocation();
         Location homeLocation = homezone.getCenter();
         return Math.sqrt(Math.pow(playerLocation.getX() - homeLocation.getX(), 2) + Math.pow(playerLocation.getZ() - homeLocation.getZ(), 2));
@@ -79,7 +79,7 @@ public class FarmzoneManager {
             return false;
         }
 
-        HomeZoneModel homezone = getFirstHomezone();
+        HomezoneModel homezone = getFirstHomezone();
 
         if (homezone != null) {
             double distance = Math.sqrt(Math.pow(location.getX() - homezone.getCenter().getX(), 2) + Math.pow(location.getZ() - homezone.getCenter().getZ(), 2));
@@ -89,7 +89,7 @@ public class FarmzoneManager {
         return false;
     }
 
-    public HomeZoneModel getFirstHomezone()
+    public HomezoneModel getFirstHomezone()
     {
         return activeHomezones.get(firstHomezoneName);
     }
@@ -101,11 +101,11 @@ public class FarmzoneManager {
             firstHomezoneName = name;
         }
 
-        HomeZoneModel newHomeZoneModel = new HomeZoneModel(name, center, radius);
-        activeHomezones.put(name, newHomeZoneModel);
+        HomezoneModel newHomezoneModel = new HomezoneModel(name, center, radius);
+        activeHomezones.put(name, newHomezoneModel);
     }
 
-    public Map<String, HomeZoneModel> getActiveHomezones() { return activeHomezones; }
+    public Map<String, HomezoneModel> getActiveHomezones() { return activeHomezones; }
 
     public boolean deleteFarmzone(String name)
     {
@@ -141,7 +141,7 @@ public class FarmzoneManager {
 
         // save farmzone
         // TODO save players set bossbar color
-        HomeZoneModel homezone = getFirstHomezone();
+        HomezoneModel homezone = getFirstHomezone();
         if (!activeHomezones.isEmpty()) {
             config.set("farmzones." + homezone.getName() + ".name", homezone.getName());
             config.set("farmzones." + homezone.getName() + ".centerCoords", homezone.getCenter());
@@ -186,7 +186,7 @@ public class FarmzoneManager {
         // get farmzones
         try {
             String farmzoneKey = config.getConfigurationSection("farmzones").getKeys(false).iterator().next();
-            HomeZoneModel homezone = new HomeZoneModel(
+            HomezoneModel homezone = new HomezoneModel(
                     config.get("farmzones." + farmzoneKey + ".name").toString(),
                     (Location) config.get("farmzones." + farmzoneKey + ".centerCoords"),
                     (Double) config.get("farmzones." + farmzoneKey + ".radius")
