@@ -1,7 +1,7 @@
-package org.Vertyx.farmZone.managers;
+package org.Vertyx.farmzone.managers;
 
-import org.Vertyx.farmZone.models.HomeZoneModel;
-import org.Vertyx.farmZone.models.PlayerInfo;
+import org.Vertyx.farmzone.models.HomezoneModel;
+import org.Vertyx.farmzone.models.PlayerInfo;
 import org.bukkit.Location;
 import org.bukkit.boss.BossBar;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 public class FarmzoneManager {
@@ -19,15 +20,19 @@ public class FarmzoneManager {
     private String firstHomezoneName;
     private Map<UUID, PlayerInfo> playerInfoMap;
     private BossBar bossBar;
-    private Map<String, HomeZoneModel> activeHomezones;
+    private Map<String, HomezoneModel> activeHomezones;
     private LocalDate lastFarmzoneUpdate;
+    private final ReentrantLock lock = new ReentrantLock();
     public static long MAX_FARMZONE_TIME = 60 * 60 * 1000; // 1 hour in milliseconds
 
 
     private FarmzoneManager(File dataFile) {
         activeHomezones = new HashMap<>();
         playerInfoMap = new HashMap<>();
-        loadData(dataFile);
+        if (!loadData(dataFile))
+        {
+            System.out.println("[Farmzone] Could not load file successfully");
+        }
     }
 
     public static synchronized FarmzoneManager getInstance(File dataFile) {
@@ -61,7 +66,7 @@ public class FarmzoneManager {
 
     public double getDistance(Player player)
     {
-        HomeZoneModel homezone = getFirstHomezone();
+        HomezoneModel homezone = getFirstHomezone();
         Location playerLocation = player.getLocation();
         Location homeLocation = homezone.getCenter();
         return Math.sqrt(Math.pow(playerLocation.getX() - homeLocation.getX(), 2) + Math.pow(playerLocation.getZ() - homeLocation.getZ(), 2));
@@ -79,7 +84,7 @@ public class FarmzoneManager {
             return false;
         }
 
-        HomeZoneModel homezone = getFirstHomezone();
+        HomezoneModel homezone = getFirstHomezone();
 
         if (homezone != null) {
             double distance = Math.sqrt(Math.pow(location.getX() - homezone.getCenter().getX(), 2) + Math.pow(location.getZ() - homezone.getCenter().getZ(), 2));
@@ -89,7 +94,7 @@ public class FarmzoneManager {
         return false;
     }
 
-    public HomeZoneModel getFirstHomezone()
+    public HomezoneModel getFirstHomezone()
     {
         return activeHomezones.get(firstHomezoneName);
     }
@@ -101,11 +106,11 @@ public class FarmzoneManager {
             firstHomezoneName = name;
         }
 
-        HomeZoneModel newHomeZoneModel = new HomeZoneModel(name, center, radius);
-        activeHomezones.put(name, newHomeZoneModel);
+        HomezoneModel newHomezoneModel = new HomezoneModel(name, center, radius);
+        activeHomezones.put(name, newHomezoneModel);
     }
 
-    public Map<String, HomeZoneModel> getActiveHomezones() { return activeHomezones; }
+    public Map<String, HomezoneModel> getActiveHomezones() { return activeHomezones; }
 
     public boolean deleteFarmzone(String name)
     {
@@ -132,43 +137,51 @@ public class FarmzoneManager {
     public void setExitHomezoneOnJoin(Player player) { getPlayerInfo(player).exitHomezone = System.currentTimeMillis(); }
 
     // store game data
-    public void saveData(File file) {
-        YamlConfiguration config = new YamlConfiguration();
-
-        // save FarmzoneTimeout
-        config.set("farmzoneTimeoutLong", MAX_FARMZONE_TIME);
-        config.set("lastFarmzoneUpdate", lastFarmzoneUpdate.toString());
-
-        // save farmzone
-        // TODO save players set bossbar color
-        HomeZoneModel homezone = getFirstHomezone();
-        if (!activeHomezones.isEmpty()) {
-            config.set("farmzones." + homezone.getName() + ".name", homezone.getName());
-            config.set("farmzones." + homezone.getName() + ".centerCoords", homezone.getCenter());
-            config.set("farmzones." + homezone.getName() + ".defaultHome", homezone.getDefaultHomeLocation());
-            config.set("farmzones." + homezone.getName() + ".radius", homezone.getRadius());
-        }
-
-        // save playerInfos
-        for (Map.Entry<UUID, PlayerInfo> entry : playerInfoMap.entrySet()) {
-            UUID playerID = entry.getKey();
-            PlayerInfo info = entry.getValue();
-            config.set("players." + playerID + ".inFarmzone", info.inFarmzone);
-            config.set("players." + playerID + ".lastCoordinatesInFarmzone", info.lastCoordinatesInFarmzone);
-            config.set("players." + playerID + ".timeSpentInFarmzone", info.timeSpentInFarmzone);
-            config.set("players." + playerID + ".exitHomezone", info.exitHomezone);
-            config.set("players." + playerID + ".preferredHome", info.preferredHomeLocation);
-        }
+    public boolean saveData(File file) {
+        lock.lock();
         try {
-            config.save(file);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+            YamlConfiguration config = new YamlConfiguration();
+
+            // save FarmzoneTimeout
+            config.set("farmzoneTimeoutLong", MAX_FARMZONE_TIME);
+            config.set("lastFarmzoneUpdate", lastFarmzoneUpdate.toString());
+
+            // save farmzone
+            HomezoneModel homezone = getFirstHomezone();
+            if (!activeHomezones.isEmpty()) {
+                config.set("farmzones." + homezone.getName() + ".name", homezone.getName());
+                config.set("farmzones." + homezone.getName() + ".centerCoords", homezone.getCenter());
+                config.set("farmzones." + homezone.getName() + ".defaultHome", homezone.getDefaultHomeLocation());
+                config.set("farmzones." + homezone.getName() + ".radius", homezone.getRadius());
+            }
+
+            // save playerInfos
+            for (Map.Entry<UUID, PlayerInfo> entry : playerInfoMap.entrySet()) {
+                UUID playerID = entry.getKey();
+                PlayerInfo info = entry.getValue();
+                config.set("players." + playerID + ".inFarmzone", info.inFarmzone);
+                config.set("players." + playerID + ".lastCoordinatesInFarmzone", info.lastCoordinatesInFarmzone);
+                config.set("players." + playerID + ".timeSpentInFarmzone", info.timeSpentInFarmzone);
+                config.set("players." + playerID + ".exitHomezone", info.exitHomezone);
+                if (info.preferredHomeLocation != null) {
+                    config.set("players." + playerID + ".preferredHome", info.preferredHomeLocation);
+                }
+            }
+            try {
+                config.save(file);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                return false;
+            }
+        } finally {
+            lock.unlock();
         }
+        return true;
     }
 
-    public void loadData(File file) {
+    public boolean loadData(File file) {
         if (!file.exists()) {
-            return;
+            return false;
         }
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 
@@ -186,7 +199,7 @@ public class FarmzoneManager {
         // get farmzones
         try {
             String farmzoneKey = config.getConfigurationSection("farmzones").getKeys(false).iterator().next();
-            HomeZoneModel homezone = new HomeZoneModel(
+            HomezoneModel homezone = new HomezoneModel(
                     config.get("farmzones." + farmzoneKey + ".name").toString(),
                     (Location) config.get("farmzones." + farmzoneKey + ".centerCoords"),
                     (Double) config.get("farmzones." + farmzoneKey + ".radius")
@@ -197,6 +210,7 @@ public class FarmzoneManager {
             firstHomezoneName = homezone.getName();
         } catch (Exception e) {
             System.out.println("Could not recreate Homezone from File!");
+            return false;
         }
 
 
@@ -216,7 +230,9 @@ public class FarmzoneManager {
             } catch (Exception e)
             {
                 System.out.println("Can not create PlayerInfo of player [ " + ++i + " ]");
+                return false;
             }
         }
+        return true;
     }
 }

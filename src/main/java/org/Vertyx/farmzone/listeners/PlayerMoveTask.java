@@ -1,8 +1,8 @@
-package org.Vertyx.farmZone.listeners;
+package org.Vertyx.farmzone.listeners;
 
-import org.Vertyx.farmZone.FarmzoneMain;
-import org.Vertyx.farmZone.managers.FarmzoneManager;
-import org.Vertyx.farmZone.models.PlayerInfo;
+import org.Vertyx.farmzone.FarmzoneMain;
+import org.Vertyx.farmzone.managers.FarmzoneManager;
+import org.Vertyx.farmzone.models.PlayerInfo;
 import org.bukkit.Location;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
@@ -28,11 +28,6 @@ public class PlayerMoveTask implements Runnable{
         }
 
         BossBar playerBossBar = playerInfo.getBossBar();
-        player.sendMessage("Player " + player.getName() + " is in Bossbar: ");
-        for (Player playerWithBossbar : playerBossBar.getPlayers())
-        {
-            player.sendMessage("  " + playerWithBossbar.getName());
-        }
 
         if (LocalDate.now().isAfter(manager.getLastFarmzoneUpdate())) {
             manager.resetFarmzoneTimer();

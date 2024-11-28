@@ -1,7 +1,7 @@
-package org.Vertyx.farmZone.listeners;
+package org.Vertyx.farmzone.listeners;
 
-import org.Vertyx.farmZone.managers.FarmzoneManager;
-import org.Vertyx.farmZone.models.PlayerInfo;
+import org.Vertyx.farmzone.managers.FarmzoneManager;
+import org.Vertyx.farmzone.models.PlayerInfo;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;

@@ -1,14 +1,14 @@
-package org.Vertyx.farmZone.models;
+package org.Vertyx.farmzone.models;
 
 import org.bukkit.Location;
 
-public class HomeZoneModel {
+public class HomezoneModel {
     private String name;
     final private Location center;
     private double radius;
     private Location defaultHomeLocation;
 
-    public HomeZoneModel(String name, Location center, double radius) {
+    public HomezoneModel(String name, Location center, double radius) {
         this.name = name;
         this.center = center;
         this.radius = radius;

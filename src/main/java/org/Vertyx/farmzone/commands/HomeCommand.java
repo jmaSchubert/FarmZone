@@ -1,7 +1,7 @@
-package org.Vertyx.farmZone.commands;
+package org.Vertyx.farmzone.commands;
 
-import org.Vertyx.farmZone.managers.FarmzoneManager;
-import org.Vertyx.farmZone.models.HomeZoneModel;
+import org.Vertyx.farmzone.managers.FarmzoneManager;
+import org.Vertyx.farmzone.models.HomezoneModel;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -36,7 +36,7 @@ public class HomeCommand implements CommandExecutor {
 
         if (manager.getPlayerInfo(player) != null && manager.locationInFarmzone(locationBeforeTeleport))
         {
-            HomeZoneModel homezone = manager.getFirstHomezone();
+            HomezoneModel homezone = manager.getFirstHomezone();
             if(homezone == null)
             {
                 player.sendMessage("[!] Can't return home, because there is none");

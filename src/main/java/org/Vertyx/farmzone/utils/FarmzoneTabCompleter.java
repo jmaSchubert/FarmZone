@@ -1,7 +1,7 @@
-package org.Vertyx.farmZone.utils;
+package org.Vertyx.farmzone.utils;
 
-import org.Vertyx.farmZone.managers.FarmzoneManager;
-import org.Vertyx.farmZone.models.HomeZoneModel;
+import org.Vertyx.farmzone.managers.FarmzoneManager;
+import org.Vertyx.farmzone.models.HomezoneModel;
 import org.bukkit.boss.BarColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -39,6 +39,7 @@ public class FarmzoneTabCompleter implements TabCompleter {
             suggestions.add("hidebossbar");
             suggestions.add("sethome");
             suggestions.add("setdefault");
+            suggestions.add("safe");
         }
         else if (args[0].equalsIgnoreCase("create")) {
             switch (args.length) {
@@ -57,7 +58,7 @@ public class FarmzoneTabCompleter implements TabCompleter {
         }
         else if (args[0].equalsIgnoreCase("delete"))
         {
-            for (HomeZoneModel homezone : manager.getActiveHomezones().values())
+            for (HomezoneModel homezone : manager.getActiveHomezones().values())
             {
                 suggestions.add(homezone.getName());
             }

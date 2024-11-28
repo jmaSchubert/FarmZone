@@ -1,8 +1,9 @@
-package org.Vertyx.farmZone.commands;
+package org.Vertyx.farmzone.commands;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.Vertyx.farmZone.managers.FarmzoneManager;
+import org.Vertyx.farmzone.FarmzoneMain;
+import org.Vertyx.farmzone.managers.FarmzoneManager;
 import org.bukkit.Location;
 import org.bukkit.boss.BarColor;
 import org.bukkit.command.Command;
@@ -39,6 +40,8 @@ public class FarmzoneCommand implements CommandExecutor {
                 .append(Component.text(" - Hides the boss bar.").color(NamedTextColor.WHITE)));
 //        player.sendMessage(Component.text("/farmzone reset").color(NamedTextColor.GOLD)
 //                .append(Component.text(" - Resets the Farmzone timer.").color(NamedTextColor.WHITE)));
+        player.sendMessage(Component.text("/farmzone safe").color(NamedTextColor.GOLD)
+                .append(Component.text(" - Safes the playerdata immediatly").color(NamedTextColor.WHITE)));
         player.sendMessage(Component.text("/farmzone help").color(NamedTextColor.GOLD)
                 .append(Component.text(" - Shows this help message.").color(NamedTextColor.WHITE)));
     }
@@ -156,6 +159,17 @@ public class FarmzoneCommand implements CommandExecutor {
 
             case "distance":
                 player.sendMessage("[!] Distanz zum Mittelpunkt: " + manager.getDistance(player));
+                break;
+
+            case "safe":
+                if (manager.saveData(FarmzoneMain.playerDataFile))
+                {
+                    player.sendMessage("[!] Saved successfully!");
+                }
+                else
+                {
+                    player.sendMessage("[!] Saving failed!");
+                }
                 break;
 
             case "help":

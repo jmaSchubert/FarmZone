@@ -52,7 +52,7 @@ tasks.jar {
 tasks.register('buildPlugin', Jar) {
     dependsOn 'build'
     from sourceSets.main.output
-    archiveBaseName.set("FarmingZone") // Set your plugin name here
+    archiveBaseName.set("Farmzone") // Set your plugin name here
 }
 
 // Task to copy the built JAR to server directory
