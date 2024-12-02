@@ -123,20 +123,6 @@ public class FarmzoneCommand implements CommandExecutor {
                 manager.getPlayerInfo(player).showBossbar(player);
                 break;
 
-            case "sethome":
-            case "setHome":
-                // check if Location is even in the homezone
-                if (!manager.locationInFarmzone(currentPlayerLocation))
-                {
-                    manager.getPlayerInfo(player).preferredHomeLocation = currentPlayerLocation;
-                    player.sendMessage("[!] Set home location to current position!");
-                    return true;
-                } else
-                {
-                    player.sendMessage("[!] You're not in the homezone though ¯\\_(ツ)_/¯");
-                }
-                break;
-
             case "setdefault":
                 if (!player.hasPermission("minecraft.command.gamemode"))
                 {

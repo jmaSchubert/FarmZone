@@ -1,6 +1,7 @@
 package org.Vertyx.farmzone.models;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 public class HomezoneModel {
     private String name;
@@ -16,9 +17,10 @@ public class HomezoneModel {
     }
 
     // check if user has preferred home else default
-    public Location getPreferredHome(PlayerInfo info)
+    public Location getPreferredHome(Player player)
     {
-        if (info == null || info.preferredHomeLocation == null)
+        Location spawnLocation = player.getPotentialBedLocation();
+        if (spawnLocation == null)
         {
             if (defaultHomeLocation == null)
             {
@@ -28,7 +30,7 @@ public class HomezoneModel {
         }
         else
         {
-            return info.preferredHomeLocation;
+            return spawnLocation;
         }
     }
 

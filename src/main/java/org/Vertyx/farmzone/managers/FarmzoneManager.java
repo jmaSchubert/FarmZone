@@ -163,9 +163,6 @@ public class FarmzoneManager {
                 config.set("players." + playerID + ".lastCoordinatesInFarmzone", info.lastCoordinatesInFarmzone);
                 config.set("players." + playerID + ".timeSpentInFarmzone", info.timeSpentInFarmzone);
                 config.set("players." + playerID + ".exitHomezone", info.exitHomezone);
-                if (info.preferredHomeLocation != null) {
-                    config.set("players." + playerID + ".preferredHome", info.preferredHomeLocation);
-                }
             }
             try {
                 config.save(file);
@@ -225,7 +222,6 @@ public class FarmzoneManager {
                         config.getLong("players." + key + ".exitHomezone"),
                         config.getLong("players." + key + ".timeSpentInFarmzone")
                 );
-                info.preferredHomeLocation = (Location) config.get("player." + key + ".preferredHome");
                 setPlayerInfo(info.playerID, info);
             } catch (Exception e)
             {

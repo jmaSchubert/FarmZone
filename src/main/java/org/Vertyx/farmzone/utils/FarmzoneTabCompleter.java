@@ -37,7 +37,6 @@ public class FarmzoneTabCompleter implements TabCompleter {
             suggestions.add("bossbarcolor");
             suggestions.add("showbossbar");
             suggestions.add("hidebossbar");
-            suggestions.add("sethome");
             suggestions.add("setdefault");
             suggestions.add("safe");
         }

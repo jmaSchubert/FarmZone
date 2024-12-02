@@ -44,7 +44,7 @@ public class HomeCommand implements CommandExecutor {
             }
 
             player.sendMessage("[!] Returning Home in 3 seconds. Please stand still...");
-            Location homeLocation = homezone.getPreferredHome(manager.getPlayerInfo(player));
+            Location homeLocation = homezone.getPreferredHome(player);
 
             for (int i = 0; i < 60; i++) {
                 int ticks = i;
