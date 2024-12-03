@@ -1,5 +1,7 @@
 package org.Vertyx.farmzone.models;
 
+import org.Vertyx.farmzone.FarmzoneMain;
+import org.Vertyx.farmzone.managers.FarmzoneManager;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -8,11 +10,13 @@ public class HomezoneModel {
     final private Location center;
     private double radius;
     private Location defaultHomeLocation;
+    private FarmzoneManager manager;
 
-    public HomezoneModel(String name, Location center, double radius) {
+    public HomezoneModel(String name, Location center, double radius, FarmzoneManager manager) {
         this.name = name;
         this.center = center;
         this.radius = radius;
+        this.manager = manager;
         defaultHomeLocation = center;
     }
 
@@ -20,7 +24,7 @@ public class HomezoneModel {
     public Location getPreferredHome(Player player)
     {
         Location spawnLocation = player.getPotentialBedLocation();
-        if (spawnLocation == null)
+        if (spawnLocation == null || manager.locationInFarmzone(spawnLocation))
         {
             if (defaultHomeLocation == null)
             {

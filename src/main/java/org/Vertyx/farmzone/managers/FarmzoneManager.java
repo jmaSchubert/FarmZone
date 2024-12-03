@@ -107,7 +107,7 @@ public class FarmzoneManager {
             firstHomezoneName = name;
         }
 
-        HomezoneModel newHomezoneModel = new HomezoneModel(name, center, radius);
+        HomezoneModel newHomezoneModel = new HomezoneModel(name, center, radius, this);
         activeHomezones.put(name, newHomezoneModel);
     }
 
@@ -200,7 +200,8 @@ public class FarmzoneManager {
             HomezoneModel homezone = new HomezoneModel(
                     config.get("farmzones." + farmzoneKey + ".name").toString(),
                     (Location) config.get("farmzones." + farmzoneKey + ".centerCoords"),
-                    (Double) config.get("farmzones." + farmzoneKey + ".radius")
+                    (Double) config.get("farmzones." + farmzoneKey + ".radius"),
+                    this
             );
 
             homezone.setDefaultHomeLocation( (Location) config.get("farmzones." + farmzoneKey + ".defaultHome"));
