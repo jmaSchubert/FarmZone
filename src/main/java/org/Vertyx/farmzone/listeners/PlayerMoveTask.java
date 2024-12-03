@@ -4,6 +4,7 @@ import org.Vertyx.farmzone.FarmzoneMain;
 import org.Vertyx.farmzone.managers.FarmzoneManager;
 import org.Vertyx.farmzone.models.PlayerInfo;
 import org.bukkit.Location;
+import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
@@ -61,10 +62,20 @@ public class PlayerMoveTask implements Runnable{
                 long leftoverTime = FarmzoneManager.MAX_FARMZONE_TIME - (playerInfo.timeSpentInFarmzone + timeSpentInCurrentSession);
                 playerBossBar.setProgress((double)leftoverTime/ FarmzoneManager.MAX_FARMZONE_TIME);
                 playerBossBar.setTitle("Remaining time: " + (leftoverTime / 60000) + " minutes");
-                // display leftovertime on critical time stamps (30min, 15min, 5min, 1min, 5s, 4s, 3s, 2s, 1s)
-                if (leftoverTime <= 15 * 60 * 1000 && leftoverTime > 14 * 60 * 1000) { player.sendMessage("[!] Remaining time: 15min"); }
-                else if (leftoverTime <= 1 * 60 * 1000 && leftoverTime > 59 * 1000) { player.sendMessage("[!] Remaining time: 1min"); }
-                else if (leftoverTime <= 10 * 1000 && leftoverTime > 9 * 1000) { player.sendMessage("[!] Remaining time: 10sec"); }
+
+                // display leftovertime on critical time stamps (15min, 1min, 10sec)
+                if (leftoverTime <= 15 * 60 * 1000 && leftoverTime > 14 * 60 * 1000 && !playerInfo.notified15Min) {
+                    player.sendMessage("[!] Remaining time: 15min");
+                    playerInfo.notified15Min = true;
+                } else if (leftoverTime <= 1 * 60 * 1000 && leftoverTime > 59 * 1000 && !playerInfo.notified1Min) {
+                    playerBossBar.setColor(BarColor.YELLOW);
+                    player.sendMessage("[!] Remaining time: 1min");
+                    playerInfo.notified1Min = true;
+                } else if (leftoverTime <= 10 * 1000 && leftoverTime > 9 * 1000 && !playerInfo.notified10Sec) {
+                    playerBossBar.setColor(BarColor.RED);
+                    player.sendMessage("[!] Remaining time: 10sec");
+                    playerInfo.notified10Sec = true;
+                }
             }
         } else {
             // player returns to homezone
@@ -74,6 +85,11 @@ public class PlayerMoveTask implements Runnable{
                 playerInfo.timeSpentInFarmzone += timeSpentInCurrentSession;
                 player.sendMessage("[!] Returned to homezone");
                 playerBossBar.removePlayer(player);
+
+                // reset message flags
+                playerInfo.notified15Min = false;
+                playerInfo.notified1Min = false;
+                playerInfo.notified10Sec = false;
 
             } else {
                 // player remains in homezone

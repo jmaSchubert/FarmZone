@@ -3,6 +3,7 @@ package org.Vertyx.farmzone.managers;
 import org.Vertyx.farmzone.models.HomezoneModel;
 import org.Vertyx.farmzone.models.PlayerInfo;
 import org.bukkit.Location;
+import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BossBar;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -209,7 +210,6 @@ public class FarmzoneManager {
             System.out.println("Could not recreate Homezone from File!");
             return false;
         }
-
 
         // get playerInfos
         int i = 0;

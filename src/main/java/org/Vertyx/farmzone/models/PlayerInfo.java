@@ -17,6 +17,10 @@ public class PlayerInfo {
     public long timeSpentInFarmzone;
     BossBar bossBar;
 
+    public boolean notified15Min;
+    public boolean notified1Min;
+    public boolean notified10Sec;
+
     public PlayerInfo(UUID playerID, boolean inFarmzone, Location lastCoordinates, long exitHomezone, long timeSpentInFarmzone) {
         this.playerID = playerID;
         this.inFarmzone = inFarmzone;
@@ -24,6 +28,9 @@ public class PlayerInfo {
         this.exitHomezone = exitHomezone;
         this.timeSpentInFarmzone = timeSpentInFarmzone;
         this.bossBar = Bukkit.createBossBar("You're in the Farmzone!", BarColor.GREEN, BarStyle.SOLID);
+        notified15Min = false;
+        notified1Min = false;
+        notified10Sec = false;
     }
 
     public BossBar getBossBar() { return this.bossBar; }
